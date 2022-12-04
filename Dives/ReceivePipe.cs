@@ -80,5 +80,33 @@ namespace Dives
             }
 
         }
+
+        public bool Dequeue()
+        {
+            lock (locker)
+            {
+                if(messageQueue.Count > 0)
+                {
+                    Entry entry = messageQueue.Dequeue();
+
+                    if (entry.data != default)
+                    {
+                        pool.Return(entry.data.Array);
+                    }
+
+                    messagePerClientDict[entry.connectionId]--;
+
+                    if(messagePerClientDict[entry.connectionId] == 0)
+                    {
+                        messagePerClientDict.Remove(entry.connectionId);
+                    }
+
+                    //We dequeued something
+                    return true;
+                }
+
+                return false;
+            }
+        }
     }
 }
