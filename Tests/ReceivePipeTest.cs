@@ -28,7 +28,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void EnqueueThenDequeue()
+        public void EnqueueThenPeek()
         {
             pipe = new ReceivePipe(64);
             ArraySegment<byte> segment = Encoding.UTF8.GetBytes("Hello");
