@@ -73,7 +73,7 @@ namespace Dives
             {
                 if(messageQueue.Count > 0)
                 {
-                    entry = messageQueue.Dequeue();
+                    entry = messageQueue.Peek();
                     return true;
                 }
                 return false;
