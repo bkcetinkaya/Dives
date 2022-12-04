@@ -45,5 +45,23 @@ namespace Tests
             Assert.AreEqual(1, pipe.MessageQueueCount());
             
         }
+
+        [TestMethod]
+        public void EnqueueThenDequeue()
+        {
+            pipe = new ReceivePipe(64);
+            ArraySegment<byte> segment = Encoding.UTF8.GetBytes("Hello");
+            Entry entry = new Entry(0, segment, EventType.Data);
+
+            pipe.Enqueue(entry);
+
+            Assert.AreEqual(1, pipe.MessageCountForThisClient(entry.connectionId));
+            Assert.IsTrue(pipe.Peek(out Entry e));
+            Assert.AreEqual("Hello", Encoding.UTF8.GetString(e.data));
+
+            // Peek should not remove the Entry from the queue
+            Assert.AreEqual(1, pipe.MessageQueueCount());
+
+        }
     }
 }
