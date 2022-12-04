@@ -42,6 +42,15 @@ namespace Tests
         }
 
         [TestMethod]
+        public void TestDequeueWhenQueueIsEmpty()
+        {
+            pipe = new ReceivePipe(64);
+
+            Assert.IsFalse(pipe.Dequeue());
+        }
+
+
+        [TestMethod]
         public void TestEnqueue100Message()
         {
             pipe = new ReceivePipe(64);
