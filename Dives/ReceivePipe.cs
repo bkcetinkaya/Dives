@@ -21,6 +21,14 @@ namespace Dives
         }
 
 
+        public int PoolCount()
+        {
+            lock (locker)
+            {
+                return pool.Count();
+            }
+        }
+
         public int MessageQueueCount()
         {
             lock (locker)
