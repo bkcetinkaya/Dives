@@ -21,7 +21,14 @@ namespace Dives
         }
 
 
-        public int MessageQueueCount => messageQueue.Count;
+        public int MessageQueueCount()
+        {
+            lock (locker)
+            {
+                return messageQueue.Count;
+            }
+        }
+
         public int MessageCountForThisClient(int id)
         {
             lock (locker)
@@ -42,7 +49,9 @@ namespace Dives
 
                     Buffer.BlockCopy(entry.data.Array, 0, bytes, 0, entry.data.Count);
 
-                    segment = new ArraySegment<byte>(bytes);
+                    // if the actual message size is smaller than the MaxMessageSize, there will be whitespace at the end of the message. 
+                    // To get rid of it, we simply create an array segment which is as large as the character count of actual message.
+                    segment = new ArraySegment<byte>(bytes,0, entry.data.Count);
 
                 }
 
@@ -54,6 +63,22 @@ namespace Dives
             }
 
             
+        }
+
+        public bool Peek(out Entry entry)
+        {
+            entry = default;
+
+            lock (locker)
+            {
+                if(messageQueue.Count > 0)
+                {
+                    entry = messageQueue.Dequeue();
+                    return true;
+                }
+                return false;
+            }
+
         }
     }
 }
