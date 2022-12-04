@@ -109,8 +109,10 @@ namespace Tests
             Assert.AreEqual(0, pipe.PoolCount());
             pipe.Dequeue();
 
-            // Peek should remove the Entry from the queue
+            // Dequeue should remove the Entry from the queue
             Assert.AreEqual(0, pipe.MessageQueueCount());
+            // After dequeue, message count for this client must be 0 
+            Assert.AreEqual(0, pipe.MessageCountForThisClient(entry.connectionId));
 
             //After dequeing, pool.count must be +1
             Assert.AreEqual(1, pipe.PoolCount());
