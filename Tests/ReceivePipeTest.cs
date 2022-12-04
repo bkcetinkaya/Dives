@@ -35,9 +35,14 @@ namespace Tests
             Entry entry = new Entry(0, segment, EventType.Data);
 
             pipe.Enqueue(entry);
+            Assert.AreEqual(1, pipe.MessageQueueCount());
+
 
             Assert.IsTrue(pipe.Peek(out Entry e));
             Assert.AreEqual("Hello",Encoding.UTF8.GetString(e.data));
+
+            // Peek should not remove the Entry from the queue
+            Assert.AreEqual(1, pipe.MessageQueueCount());
             
         }
     }
