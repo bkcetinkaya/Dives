@@ -17,15 +17,54 @@ namespace Tests
             Assert.AreEqual(pipe.MessageQueueCount(), 0);
 
             ArraySegment<byte> segment = Encoding.ASCII.GetBytes("Hello");
-            Entry entry = new Entry(0,segment, EventType.Data);
+            Entry entry = new Entry(1,segment, EventType.Data);
 
+            //Before enqueing anything, message count and messageCountPer client must be 0
+            Assert.AreEqual(pipe.MessageQueueCount(), 0);
+            Assert.AreEqual(pipe.MessageCountForThisClient(entry.connectionId), 0);
+
+
+            // enqueue for id:1 client
             pipe.Enqueue(entry);
 
             Assert.AreEqual(pipe.MessageQueueCount(), 1);
-
             Assert.AreEqual(pipe.MessageCountForThisClient(entry.connectionId), 1);
-            
+
+            Entry entry2 = new Entry(24, segment, EventType.Data);
+            // enqueue for id:24 client
+            pipe.Enqueue(entry2);
+
+            Assert.AreEqual(pipe.MessageCountForThisClient(entry2.connectionId), 1);
+            Assert.AreEqual(pipe.MessageQueueCount(), 2);
+
+         
+
         }
+
+        [TestMethod]
+        public void TestEnqueue100Message()
+        {
+            pipe = new ReceivePipe(64);
+            Assert.AreEqual(pipe.MessageQueueCount(), 0);
+
+            ArraySegment<byte> segment = Encoding.ASCII.GetBytes("Hello");
+            Entry entry = new Entry(1, segment, EventType.Data);
+
+
+            // enqueue 100 messages
+            for (int i = 0; i < 100; i++)
+            {
+                pipe.Enqueue(entry);
+            }
+
+            //After enqueing 100 messages, message count and messageCount for this client must be 100
+            Assert.AreEqual(100, pipe.MessageQueueCount());
+            Assert.AreEqual(100, pipe.MessageCountForThisClient(entry.connectionId));
+            
+
+        }
+
+
 
         [TestMethod]
         public void EnqueueThenPeek()
